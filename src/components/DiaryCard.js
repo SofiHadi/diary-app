@@ -1,64 +1,57 @@
-import React from 'react'; 
-import { View, Text, Image, StyleSheet } from 'react-native'; 
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { tokens } from '../../theme';
 
-export default function DiaryCard({ title, date, preview, image, mood }) { 
-  // Fungsi untuk menentukan warna border berdasarkan mood
-  const getMoodColor = (moodName) => {
-    switch (moodName) {
-      case 'happy': return '#4ade80'; // Hijau
-      case 'focus': return '#3b82f6'; // Biru
-      case 'calm': return '#a78bfa'; // Ungu
-      case 'sad': return '#9ca3af'; // Abu-abu
-      case 'excited': return '#f59e0b'; // Oranye
-      default: return '#e5e7eb'; // Abu-abu standar
-    }
-  };
+export default function DiaryCard({ item, onPress }) {
+  return (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={`Buka catatan harian ${item.title}`}
+    >
+      <View style={styles.contentContainer}>
+        <Text style={styles.title} numberOfLines={1}>
+          {item.title}
+        </Text>
+        <Text style={styles.date}>
+          {item.date}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
 
-  const moodColor = getMoodColor(mood);
-
-  return ( 
-    // Menerapkan warna kustom pada borderColor dan menebalkan border kiri sebagai variasi
-    <View style={[styles.card, { borderColor: moodColor, borderLeftWidth: 6 }]}> 
-      <Image source={image} style={styles.mood} /> 
-      <View style={styles.content}> 
-        <Text style={styles.title}>{title}</Text> 
-        <Text style={styles.date}>{date}</Text> 
-        <Text style={styles.preview} numberOfLines={2}>
-          {preview}
-        </Text> 
-      </View> 
-    </View> 
-  ); 
-} 
-
-const styles = StyleSheet.create({ 
-  card: { 
-    flexDirection: 'row', 
-    gap: 12, 
-    padding: 12, 
-    borderWidth: 1, 
-    borderRadius: 12, 
-    marginBottom: 12,
-    backgroundColor: '#fff',
-  }, 
-  mood: { 
-    width: 64, 
-    height: 64, 
-    borderRadius: 32, 
-  }, 
-  content: { 
-    flex: 1, 
-  }, 
-  title: { 
-    fontSize: 16, 
-    fontWeight: '700', 
-  }, 
-  date: { 
-    fontSize: 12, 
-    color: '#6b7280', 
-    marginBottom: 6, 
-  }, 
-  preview: { 
-    fontSize: 14, 
-  }, 
+const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+    backgroundColor: tokens.colors.surface,
+    padding: tokens.spacing.md,
+    margin: tokens.spacing.xs,
+    borderRadius: tokens.borderRadius.md,
+    minHeight: 80,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: tokens.colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  contentContainer: {
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: tokens.colors.text,
+    marginBottom: tokens.spacing.xs,
+  },
+  date: {
+    fontSize: 14,
+    color: tokens.colors.textSecondary,
+  },
 });
