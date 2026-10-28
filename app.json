@@ -4,6 +4,9 @@
     "slug": "diary-app",
     "version": "1.0.0",
     "orientation": "default",
-    "userInterfaceStyle": "light"
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-status-bar"
+    ]
   }
 }

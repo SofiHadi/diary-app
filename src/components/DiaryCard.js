@@ -1,57 +1,83 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { tokens } from '../../theme';
+import { View, Text, Image, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { colors, spacing } from '../styles/tokens';
 
-export default function DiaryCard({ item, onPress }) {
+export default function DiaryCard({
+  title,
+  date,
+  preview,
+  moodImage,
+  liked,
+  onPress,
+  onToggleLike,
+}) {
   return (
-    <TouchableOpacity
-      style={styles.card}
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.7}
-      accessible={true}
-      accessibilityRole="button"
-      accessibilityLabel={`Buka catatan harian ${item.title}`}
+      style={({ pressed }) => [styles.card, { opacity: pressed ? 0.85 : 1 }]}
+      accessibilityLabel={`Entri ${title} tanggal ${date}`}
     >
-      <View style={styles.contentContainer}>
+      <Image source={moodImage} style={styles.mood} />
+
+      <View style={styles.content}>
         <Text style={styles.title} numberOfLines={1}>
-          {item.title}
+          {title}
         </Text>
-        <Text style={styles.date}>
-          {item.date}
+        <Text style={styles.date}>{date}</Text>
+        <Text style={styles.preview} numberOfLines={3} ellipsizeMode="tail">
+          {preview}
         </Text>
       </View>
-    </TouchableOpacity>
+
+      <TouchableOpacity onPress={onToggleLike} style={styles.likeButton}>
+        <Text style={styles.likeText}>{liked ? '❤️' : '🤍'}</Text>
+      </TouchableOpacity>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    backgroundColor: tokens.colors.surface,
-    padding: tokens.spacing.md,
-    margin: tokens.spacing.xs,
-    borderRadius: tokens.borderRadius.md,
-    minHeight: 80,
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: tokens.colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    flexDirection: 'row',
+    padding: spacing.medium,
+    marginHorizontal: spacing.medium,
+    marginVertical: spacing.small,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  contentContainer: {
+  mood: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: spacing.medium,
+  },
+  content: {
+    flex: 1,
     justifyContent: 'center',
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: tokens.colors.text,
-    marginBottom: tokens.spacing.xs,
+    color: colors.text,
   },
   date: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginBottom: 4,
+  },
+  preview: {
     fontSize: 14,
-    color: tokens.colors.textSecondary,
+    color: colors.textSecondary,
+  },
+  likeButton: {
+    justifyContent: 'center',
+    paddingLeft: spacing.medium,
+  },
+  likeText: {
+    fontSize: 24,
   },
 });

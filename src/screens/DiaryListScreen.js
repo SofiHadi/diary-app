@@ -1,46 +1,72 @@
 import React, { useState } from 'react';
-import { View, FlatList, useWindowDimensions, StyleSheet } from 'react-native';
-import { tokens } from '../../theme';
+import { View, FlatList, StyleSheet } from 'react-native';
+import SearchBar from '../components/SearchBar';
+import EntryForm from '../components/EntryForm';
 import DiaryCard from '../components/DiaryCard';
 import DiaryDetailModal from '../components/DiaryDetailModal';
+import { colors } from '../styles/tokens';
 
-const DIARY_DATA = [
-  { id: '1', title: 'Belajar React Native', date: '10 Okt 2026', content: 'Hari ini saya belajar tentang FlatList dan Hooks.' },
-  { id: '2', title: 'Makan Siang Enak', date: '11 Okt 2026', content: 'Makan ayam geprek level 5, sangat pedas tapi enak.' },
-  { id: '3', title: 'Tugas Praktikum', date: '12 Okt 2026', content: 'Mengerjakan tugas membuat responsif desain 1 dan 2 kolom.' },
-  { id: '4', title: 'Olahraga Pagi', date: '13 Okt 2026', content: 'Lari keliling komplek selama 30 menit agar sehat.' },
-];
+const MOOD_IMAGES = {
+  makan: require('../../assets/moods/makan.png'),
+  sedih: require('../../assets/moods/sedih.png'),
+};
 
 export default function DiaryListScreen() {
-  const { width } = useWindowDimensions();
-  // Breakpoint 600px
-  const numColumns = width >= 600 ? 2 : 1;
+  const [entries, setEntries] = useState([
+    { id: '1', title: 'Makan Bareng', preview: 'Hari ini makan mie ayam bareng teman.', date: '28/10/2026', mood: 'makan' },
+    { id: '2', title: 'Tugas Menumpuk', preview: 'Sedih banget tugas minggu ini banyak.', date: '28/10/2026', mood: 'sedih' },
+  ]);
+  const [query, setQuery] = useState('');
+  const [likedIds, setLikedIds] = useState({});
+  const [selected, setSelected] = useState(null);
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedDiary, setSelectedDiary] = useState(null);
-
-  const handlePressCard = (diary) => {
-    setSelectedDiary(diary);
-    setModalVisible(true);
+  const handleSearch = (text) => {
+    setQuery(text);
   };
+
+  const handleAddEntry = (newEntry) => {
+    setEntries([newEntry, ...entries]);
+  };
+
+  const handleToggleLike = (id) => {
+    setLikedIds((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const filteredEntries = entries.filter(
+    (entry) =>
+      entry.title.toLowerCase().includes(query.toLowerCase()) ||
+      entry.preview.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
+      <SearchBar onSearch={handleSearch} />
+      <EntryForm onSubmit={handleAddEntry} />
+
       <FlatList
-        key={numColumns} // PENTING: Merender ulang saat jumlah kolom berubah
-        data={DIARY_DATA}
-        numColumns={numColumns}
-        contentContainerStyle={styles.listPadding}
-        renderItem={({ item }) => (
-          <DiaryCard item={item} onPress={() => handlePressCard(item)} />
-        )}
+        data={filteredEntries}
         keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <DiaryCard
+            title={item.title}
+            date={item.date}
+            preview={item.preview}
+            moodImage={MOOD_IMAGES[item.mood] || MOOD_IMAGES['makan']}
+            liked={!!likedIds[item.id]}
+            onPress={() => setSelected(item)}
+            onToggleLike={() => handleToggleLike(item.id)}
+          />
+        )}
       />
 
       <DiaryDetailModal
-        visible={modalVisible}
-        diary={selectedDiary}
-        onClose={() => setModalVisible(false)}
+        visible={!!selected}
+        entry={selected}
+        moodImage={selected ? (MOOD_IMAGES[selected.mood] || MOOD_IMAGES['makan']) : null}
+        onClose={() => setSelected(null)}
       />
     </View>
   );
@@ -49,9 +75,6 @@ export default function DiaryListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: tokens.colors.background,
-  },
-  listPadding: {
-    padding: tokens.spacing.sm,
+    backgroundColor: colors.background,
   },
 });

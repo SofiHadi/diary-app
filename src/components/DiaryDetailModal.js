@@ -1,26 +1,20 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { tokens } from '../../theme';
+import { Modal, View, Text, Button, StyleSheet, Image } from 'react-native';
+import { colors, spacing } from '../styles/tokens';
 
-export default function DiaryDetailModal({ visible, diary, onClose }) {
-  if (!diary) return null;
+export default function DiaryDetailModal({ visible, entry, onClose, moodImage }) {
+  if (!entry) return null;
 
   return (
-    <Modal visible={visible} animationType="fade" transparent={true}>
+    <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
-        <View style={styles.modalCard}>
-          <Text style={styles.title}>{diary.title}</Text>
-          <Text style={styles.date}>{diary.date}</Text>
-          <Text style={styles.content}>{diary.content}</Text>
+        <View style={styles.modalContent}>
+          <Image source={moodImage} style={styles.mood} />
+          <Text style={styles.title}>{entry.title}</Text>
+          <Text style={styles.date}>{entry.date}</Text>
+          <Text style={styles.body}>{entry.preview}</Text>
 
-          <TouchableOpacity 
-            style={styles.closeButton} 
-            onPress={onClose}
-            accessible={true}
-            accessibilityLabel="Tutup detail catatan"
-          >
-            <Text style={styles.closeText}>Tutup</Text>
-          </TouchableOpacity>
+          <Button title="Tutup" onPress={onClose} color={colors.primary} />
         </View>
       </View>
     </Modal>
@@ -30,46 +24,34 @@ export default function DiaryDetailModal({ visible, diary, onClose }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: tokens.spacing.md,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: spacing.large,
   },
-  modalCard: {
-    width: '90%',
-    maxWidth: 500,
-    backgroundColor: tokens.colors.surface,
-    padding: tokens.spacing.lg,
-    borderRadius: tokens.borderRadius.md,
+  modalContent: {
+    backgroundColor: colors.surface,
+    padding: spacing.large,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  mood: {
+    width: 80,
+    height: 80,
+    marginBottom: spacing.medium,
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: tokens.colors.text,
-    marginBottom: tokens.spacing.xs,
+    marginBottom: spacing.small,
   },
   date: {
     fontSize: 14,
-    color: tokens.colors.textSecondary,
-    marginBottom: tokens.spacing.md,
+    color: colors.textSecondary,
+    marginBottom: spacing.medium,
   },
-  content: {
+  body: {
     fontSize: 16,
-    color: tokens.colors.text,
-    lineHeight: 24,
-    marginBottom: tokens.spacing.lg,
-  },
-  closeButton: {
-    backgroundColor: tokens.colors.primary,
-    paddingVertical: tokens.spacing.md,
-    borderRadius: tokens.borderRadius.md,
-    alignItems: 'center',
-    minHeight: 48,
-    justifyContent: 'center',
-  },
-  closeText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: spacing.large,
   },
 });
